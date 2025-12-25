@@ -12,11 +12,16 @@ declare module "fastify" {
  * Database plugin - connects Drizzle ORM to Fastify
  */
 const dbPlugin: FastifyPluginAsync = async (fastify) => {
+  fastify.log.info("🔌 Connecting to database...");
+
   // Test connection on startup
   const isConnected = await testConnection();
 
-  if (!isConnected) {
-    fastify.log.warn("Database connection failed, but server will continue");
+  if (isConnected) {
+    fastify.log.info("✅ Database connected successfully!");
+  } else {
+    fastify.log.error("❌ Database connection failed!");
+    fastify.log.warn("⚠️ Server will continue without database connection");
   }
 
   // Decorate fastify instance with db

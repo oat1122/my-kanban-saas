@@ -7,9 +7,9 @@ import {
   boolean,
 } from "drizzle-orm/mysql-core";
 
-// Example: Users table
+// Users table
 export const users = mysqlTable("users", {
-  id: int("id").primaryKey().autoincrement(),
+  id: varchar("id", { length: 36 }).primaryKey(), // UUID
   email: varchar("email", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }).notNull(),
   password: varchar("password", { length: 255 }).notNull(),
@@ -17,34 +17,34 @@ export const users = mysqlTable("users", {
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
 
-// Example: Boards table
+// Boards table
 export const boards = mysqlTable("boards", {
-  id: int("id").primaryKey().autoincrement(),
+  id: varchar("id", { length: 36 }).primaryKey(), // UUID
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
-  userId: int("user_id").notNull(),
+  userId: varchar("user_id", { length: 36 }).notNull(), // UUID FK
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
 
-// Example: Columns table
+// Columns table
 export const columns = mysqlTable("columns", {
-  id: int("id").primaryKey().autoincrement(),
+  id: varchar("id", { length: 36 }).primaryKey(), // UUID
   name: varchar("name", { length: 255 }).notNull(),
   position: int("position").notNull().default(0),
-  boardId: int("board_id").notNull(),
+  boardId: varchar("board_id", { length: 36 }).notNull(), // UUID FK
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
 
-// Example: Tasks table
+// Tasks table
 export const tasks = mysqlTable("tasks", {
-  id: int("id").primaryKey().autoincrement(),
+  id: varchar("id", { length: 36 }).primaryKey(), // UUID
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
   position: int("position").notNull().default(0),
-  columnId: int("column_id").notNull(),
-  assigneeId: int("assignee_id"),
+  columnId: varchar("column_id", { length: 36 }).notNull(), // UUID FK
+  assigneeId: varchar("assignee_id", { length: 36 }), // UUID FK (optional)
   dueDate: timestamp("due_date"),
   isCompleted: boolean("is_completed").default(false),
   createdAt: timestamp("created_at").defaultNow(),

@@ -1,0 +1,89 @@
+# ================================
+# Root Project .gitignore
+# ================================
+
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# ================================
+# Client (Next.js)
+# ================================
+
+# next.js
+client/.next/
+client/out/
+
+# production build
+client/build/
+
+# testing
+client/coverage/
+
+# pnp
+client/.pnp
+client/.pnp.*
+client/.yarn/*
+!client/.yarn/patches
+!client/.yarn/plugins
+!client/.yarn/releases
+!client/.yarn/versions
+
+# typescript
+*.tsbuildinfo
+
+# vercel
+client/.vercel
+
+# ================================
+# Server (Fastify)
+# ================================
+
+# compiled output
+server/dist/
+
+# drizzle
+server/drizzle/
+
+# coverage
+server/coverage/
+server/.nyc_output/
+
+# ================================
+# IDE & OS
+# ================================
+
+# mac
+.DS_Store
+
+# vim
+*.swp
+
+# jetbrains
+.idea/
+
+# vscode (optional - remove if want to share settings)
+# .vscode/
+
+# ================================
+# Logs & Debug
+# ================================
+
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ================================
+# Misc
+# ================================
+
+*.pem
+*.pid
+*.seed

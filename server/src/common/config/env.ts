@@ -18,8 +18,11 @@ const envSchema = z.object({
   HOST: z.string().default("0.0.0.0"),
   PORT: z.coerce.number().default(8000),
 
-  // CORS Configuration
-  CORS_ORIGIN: z.string().default("http://localhost:3000"),
+  // CORS Configuration (comma-separated origins)
+  CORS_ORIGINS: z
+    .string()
+    .default("http://localhost:3000,http://127.0.0.1:3000")
+    .transform((val) => val.split(",").map((s) => s.trim())),
 
   // Environment
   NODE_ENV: z

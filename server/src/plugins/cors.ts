@@ -1,5 +1,6 @@
 import fp from "fastify-plugin";
 import cors, { FastifyCorsOptions } from "@fastify/cors";
+import { env } from "../common/config/env";
 
 /**
  * This plugin enables CORS for cross-origin requests
@@ -8,7 +9,7 @@ import cors, { FastifyCorsOptions } from "@fastify/cors";
  */
 export default fp<FastifyCorsOptions>(async (fastify) => {
   fastify.register(cors, {
-    origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+    origin: env.CORS_ORIGINS,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Accept"],

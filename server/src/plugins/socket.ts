@@ -1,5 +1,6 @@
 import fp from "fastify-plugin";
 import { Server as SocketIOServer } from "socket.io";
+import { env } from "../common/config/env";
 
 /**
  * Socket.io Plugin for Real-time Updates
@@ -9,12 +10,16 @@ import { Server as SocketIOServer } from "socket.io";
  * - Events: task:created, task:updated, task:moved, task:deleted
  */
 export default fp(async (fastify) => {
+  // Socket.io with CORS configured for cross-origin requests
+  // Note: We need CORS here because socket.io handles its own upgrade requests
   const io = new SocketIOServer(fastify.server, {
     cors: {
-      origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+      origin: env.CORS_ORIGINS,
       credentials: true,
       methods: ["GET", "POST"],
     },
+    // Use unique path to avoid conflict with Fastify routes
+    path: "/socket.io/",
   });
 
   // Handle client connections

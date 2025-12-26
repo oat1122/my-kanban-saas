@@ -12,7 +12,6 @@ import { env } from "../common/config/env";
 /**
  * Global Error Handler Plugin
  * ดักจับ Error ทั้งหมดและแปลงเป็น HTTP Response อัตโนมัติ
- * ทำให้ Controller/Route สะอาดมากขึ้น
  */
 async function errorHandler(fastify: FastifyInstance) {
   fastify.setErrorHandler(

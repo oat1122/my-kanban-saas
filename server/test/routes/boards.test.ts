@@ -1,7 +1,7 @@
 import { test, after } from "node:test";
 import * as assert from "node:assert";
 import { build } from "../helper";
-import { poolConnection } from "../../src/db";
+import { poolConnection } from "../../src/common/db";
 
 test("GET /boards - should return all boards", async (t) => {
   const app = await build(t);

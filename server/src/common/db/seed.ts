@@ -1,4 +1,4 @@
-// server/src/db/seed.ts
+// server/src/common/db/seed.ts
 import "dotenv/config";
 import { db, poolConnection } from "./index";
 import { users, boards, columns, tasks } from "./schema";

@@ -2,21 +2,16 @@ import { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import {
   CreateTaskSchema,
   MoveTaskSchema,
-  UpdateTaskSchema,
+  UpdateTaskWithBoardSchema,
   TaskIdParamSchema,
-} from "../../schemas";
-import * as taskService from "../../services/task.service";
-import { z } from "zod/v4";
-
-// Schema for delete with boardId in query
-const DeleteTaskQuerySchema = z.object({
-  boardId: z.string().uuid(),
-});
-
-// Schema for update with boardId in body
-const UpdateTaskWithBoardSchema = UpdateTaskSchema.extend({
-  boardId: z.string().uuid().optional(),
-});
+  DeleteTaskQuerySchema,
+} from "./task.schema";
+import * as taskService from "./task.service";
+import {
+  NotFoundError,
+  BadRequestError,
+  ForbiddenError,
+} from "../../common/errors/errors";
 
 const taskRoutes: FastifyPluginAsyncZod = async (
   fastify,
@@ -34,9 +29,12 @@ const taskRoutes: FastifyPluginAsyncZod = async (
       },
     },
     async function (request, reply) {
+      const { boardId, ...taskData } = request.body;
+      // TODO: Get userId from auth when implemented
+      const userId = undefined;
+
       try {
-        const { boardId, ...taskData } = request.body;
-        const task = await taskService.createTask(taskData);
+        const task = await taskService.createTask(taskData, userId);
 
         // Emit WebSocket event to board room
         fastify.io.to(`board:${boardId}`).emit("task:created", {
@@ -46,8 +44,13 @@ const taskRoutes: FastifyPluginAsyncZod = async (
 
         return reply.status(201).send(task);
       } catch (error) {
-        if (error instanceof Error && error.message === "Column not found") {
-          return reply.status(400).send({ error: "Column not found" });
+        if (error instanceof Error) {
+          if (error.message === "Column not found") {
+            throw new BadRequestError("Column not found");
+          }
+          if (error.message.includes("Access denied")) {
+            throw new ForbiddenError(error.message);
+          }
         }
         throw error;
       }
@@ -69,10 +72,18 @@ const taskRoutes: FastifyPluginAsyncZod = async (
     async function (request, reply) {
       const { taskId } = request.params;
       const { boardId, ...moveData } = request.body;
-      const result = await taskService.moveTask(taskId, moveData);
+      // TODO: Get userId from auth when implemented
+      const userId = undefined;
 
-      if (!result.success && result.message === "Task not found") {
-        return reply.status(404).send({ error: "Task not found" });
+      const result = await taskService.moveTask(taskId, moveData, userId);
+
+      if (!result.success) {
+        if (result.message === "Task not found") {
+          throw new NotFoundError("Task not found");
+        }
+        if (result.message === "Access denied") {
+          throw new ForbiddenError("Access denied");
+        }
       }
 
       // Emit WebSocket event to board room
@@ -100,10 +111,18 @@ const taskRoutes: FastifyPluginAsyncZod = async (
     async function (request, reply) {
       const { taskId } = request.params;
       const { boardId } = request.query;
-      const result = await taskService.deleteTask(taskId);
+      // TODO: Get userId from auth when implemented
+      const userId = undefined;
+
+      const result = await taskService.deleteTask(taskId, userId);
 
       if (!result.success) {
-        return reply.status(404).send({ error: "Task not found" });
+        if (result.message === "Task not found") {
+          throw new NotFoundError("Task not found");
+        }
+        if (result.message === "Access denied") {
+          throw new ForbiddenError("Access denied");
+        }
       }
 
       // Emit WebSocket event to board room
@@ -131,10 +150,13 @@ const taskRoutes: FastifyPluginAsyncZod = async (
     async function (request, reply) {
       const { taskId } = request.params;
       const { boardId, ...updateData } = request.body;
-      const task = await taskService.updateTask(taskId, updateData);
+      // TODO: Get userId from auth when implemented
+      const userId = undefined;
+
+      const task = await taskService.updateTask(taskId, updateData, userId);
 
       if (!task) {
-        return reply.status(404).send({ error: "Task not found" });
+        throw new NotFoundError("Task not found");
       }
 
       // Emit WebSocket event to board room

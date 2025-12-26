@@ -1,10 +1,5 @@
 import { z } from "zod/v4";
 
-// Board Schemas - ใช้ string แทน uuid เพื่อให้ service layer จัดการ 404
-export const BoardIdParamSchema = z.object({
-  boardId: z.string(),
-});
-
 // Task Schemas
 export const CreateTaskSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -28,6 +23,16 @@ export const UpdateTaskSchema = z.object({
 // ใช้ string แทน uuid เพื่อให้ service layer จัดการ 404
 export const TaskIdParamSchema = z.object({
   taskId: z.string(),
+});
+
+// Schema for delete with boardId in query
+export const DeleteTaskQuerySchema = z.object({
+  boardId: z.string().uuid(),
+});
+
+// Schema for update with boardId in body
+export const UpdateTaskWithBoardSchema = UpdateTaskSchema.extend({
+  boardId: z.string().uuid().optional(),
 });
 
 // Infer types from schemas

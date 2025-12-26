@@ -1,6 +1,7 @@
 import { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
-import { BoardIdParamSchema } from "../../schemas";
-import * as boardService from "../../services/board.service";
+import { BoardIdParamSchema } from "./board.schema";
+import * as boardService from "./board.service";
+import { NotFoundError } from "../../common/errors/errors";
 
 const boardRoutes: FastifyPluginAsyncZod = async (
   fastify,
@@ -19,11 +20,17 @@ const boardRoutes: FastifyPluginAsyncZod = async (
     },
     async function (request, reply) {
       const { boardId } = request.params;
+      // TODO: Get userId from auth when implemented
+      // const userId = request.user?.id;
+      const userId = undefined;
 
-      const board = await boardService.getBoardWithColumnsAndTasks(boardId);
+      const board = await boardService.getBoardWithColumnsAndTasks(
+        boardId,
+        userId
+      );
 
       if (!board) {
-        return reply.status(404).send({ error: "Board not found" });
+        throw new NotFoundError("Board not found");
       }
 
       return board;
@@ -35,7 +42,11 @@ const boardRoutes: FastifyPluginAsyncZod = async (
    * ดึง Boards ทั้งหมด (สำหรับหน้า Dashboard)
    */
   fastify.get("/", async function (request, reply) {
-    return boardService.getAllBoards();
+    // TODO: Get userId from auth when implemented
+    // const userId = request.user?.id;
+    const userId = undefined;
+
+    return boardService.getAllBoards(userId);
   });
 };
 

@@ -1,7 +1,7 @@
 import { test, after } from "node:test";
 import * as assert from "node:assert";
 import { build } from "../helper";
-import { poolConnection } from "../../src/db";
+import { poolConnection } from "../../src/common/db";
 
 // Helper to get a valid columnId from the database
 async function getValidColumnId(app: any): Promise<string | null> {

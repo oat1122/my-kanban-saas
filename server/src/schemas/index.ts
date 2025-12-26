@@ -10,11 +10,13 @@ export const CreateTaskSchema = z.object({
   title: z.string().min(1, "Title is required"),
   columnId: z.string().uuid(),
   description: z.string().optional(),
+  boardId: z.string().uuid(), // Required for WebSocket room broadcasting
 });
 
 export const MoveTaskSchema = z.object({
   columnId: z.string().uuid(),
   position: z.number().int().min(1),
+  boardId: z.string().uuid(), // Required for WebSocket room broadcasting
 });
 
 export const UpdateTaskSchema = z.object({

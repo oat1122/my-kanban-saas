@@ -1,6 +1,6 @@
 import { db } from "../db";
 import { boards, columns, tasks } from "../db/schema";
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, inArray } from "drizzle-orm";
 
 // Types
 type Board = typeof boards.$inferSelect;
@@ -47,7 +47,12 @@ export async function getBoardWithColumnsAndTasks(
 
   let allTasks: Task[] = [];
   if (columnIds.length > 0) {
-    allTasks = await db.select().from(tasks).orderBy(asc(tasks.position));
+    // Fixed: ดึงเฉพาะ tasks ที่อยู่ใน columns ของ board นี้
+    allTasks = await db
+      .select()
+      .from(tasks)
+      .where(inArray(tasks.columnId, columnIds))
+      .orderBy(asc(tasks.position));
   }
 
   // 4. จัดกลุ่ม Tasks ตาม Column

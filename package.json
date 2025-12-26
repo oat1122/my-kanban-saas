@@ -1,0 +1,16 @@
+{
+  "name": "my-kanban-saas",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -k -p \"[{name}]\" -n \"CLIENT,SERVER\" -c \"magenta.bold,cyan.bold\" \"npm:dev:client\" \"npm:dev:server\"",
+    "dev:client": "cd client && set NODE_OPTIONS=--max-old-space-size=4096 && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "tailwindcss": "^4",
+    "@tailwindcss/postcss": "^4"
+  }
+}

@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npm run build:ts && tsc -p test/tsconfig.json && c8 node --test -r ts-node/register \"test/**/*.ts\"",
+    "test": "npx tsx --test --test-force-exit \"test/**/*.test.ts\"",
     "start": "npm run build:ts && fastify start -l info dist/app.js",
     "build:ts": "tsc",
     "watch:ts": "tsc -w",
@@ -16,7 +16,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "npx tsx src/common/db/seed.ts"
   },
   "keywords": [],
   "author": "",
@@ -25,12 +26,16 @@
     "@fastify/autoload": "^6.0.0",
     "@fastify/cors": "^11.2.0",
     "@fastify/sensible": "^6.0.0",
+    "@fastify/websocket": "^11.2.0",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
     "fastify": "^5.0.0",
     "fastify-cli": "^7.4.1",
     "fastify-plugin": "^5.0.0",
-    "mysql2": "^3.16.0"
+    "fastify-type-provider-zod": "^6.1.0",
+    "mysql2": "^3.16.0",
+    "socket.io": "^4.8.3",
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@types/mysql": "^2.15.27",

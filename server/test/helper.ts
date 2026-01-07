@@ -1,40 +1,38 @@
 // This file contains code that we reuse between our tests.
-import * as path from 'node:path'
-import * as test from 'node:test'
-const helper = require('fastify-cli/helper.js')
+import Fastify, { FastifyInstance } from "fastify";
+import * as test from "node:test";
+import { join } from "node:path";
+import AutoLoad from "@fastify/autoload";
 
 export type TestContext = {
-  after: typeof test.after
-}
-
-const AppPath = path.join(__dirname, '..', 'src', 'app.ts')
-
-// Fill in this config with all the configurations
-// needed for testing the application
-function config () {
-  return {
-    skipOverride: true // Register our application with fastify-plugin
-  }
-}
+  after: typeof test.after;
+};
 
 // Automatically build and tear down our instance
-async function build (t: TestContext) {
-  // you can set all the options supported by the fastify CLI command
-  const argv = [AppPath]
+async function build(t: TestContext): Promise<FastifyInstance> {
+  const app = Fastify({
+    logger: false, // Disable logging during tests
+  });
 
-  // fastify-plugin ensures that all decorators
-  // are exposed for testing purposes, this is
-  // different from the production setup
-  const app = await helper.build(argv, config())
+  // Register plugins
+  await app.register(AutoLoad, {
+    dir: join(__dirname, "..", "src", "plugins"),
+  });
+
+  // Register routes
+  await app.register(AutoLoad, {
+    dir: join(__dirname, "..", "src", "routes"),
+  });
+
+  // Wait for the app to be ready
+  await app.ready();
 
   // Tear down our app after we are done
-  // eslint-disable-next-line no-void
-  t.after(() => void app.close())
+  t.after(async () => {
+    await app.close();
+  });
 
-  return app
+  return app;
 }
 
-export {
-  config,
-  build
-}
+export { build };
